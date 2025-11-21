@@ -1,0 +1,5 @@
+{
+  "name": "Modern Eliza",
+  "description": "A modern, dual-language recreation of the classic 1966 ROGERIAN psychotherapist chatbot, utilizing pattern matching and reflection logic.",
+  "requestFramePermissions": []
+}
