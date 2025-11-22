@@ -149,6 +149,7 @@ function App() {
         <div className="max-w-4xl mx-auto mt-2 text-center">
             <p className="text-[10px] text-gray-400">
                 Eliza (1966) Simulation - No data is sent to a server.
+              <a href="URL">https://github.com/LING71671/Eliza</a>
             </p>
         </div>
       </footer>
