@@ -10,6 +10,8 @@ export type Language = 'en' | 'zh';
 export interface ScriptItem {
   pattern: RegExp;
   responses: string[];
+  key?: string; // The key to store in memory, e.g., 'mother'
+  followUps?: string[]; // Responses to use if the key is already in memory
 }
 
 export interface ReflectionMap {

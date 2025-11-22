@@ -3,8 +3,17 @@ import { englishScript, chineseScript } from './elizaScript';
 
 export class ElizaBot {
   private lastResponse: string = "";
+  private memory: Map<string, boolean> = new Map();
   
   constructor() {}
+
+  /**
+   * Resets the bot's memory.
+   */
+  public reset(): void {
+    this.memory.clear();
+    this.lastResponse = "";
+  }
 
   /**
    * Main function to process input and return a response.
@@ -14,13 +23,11 @@ export class ElizaBot {
     const config = language === 'zh' ? chineseScript : englishScript;
     
     // 1. Preprocessing
-    // Remove trailing punctuation for cleaner matching, convert to lowercase (for English)
     let cleanInput = input.trim();
     if (language === 'en') {
       cleanInput = cleanInput.toLowerCase();
       cleanInput = cleanInput.replace(/[.,?!;]$/, '');
     } else {
-      // For Chinese, remove common punctuation at end
       cleanInput = cleanInput.replace(/[。，？！；]$/, '');
     }
 
@@ -28,31 +35,41 @@ export class ElizaBot {
     for (const rule of config.keywords) {
       const match = cleanInput.match(rule.pattern);
       if (match) {
-        // 3. Select a response template
-        const responseTemplate = this.getRandomItem(rule.responses);
+        let responseTemplate: string | undefined;
+
+        // Check for memory key
+        if (rule.key && this.memory.has(rule.key) && rule.followUps && rule.followUps.length > 0) {
+            // Topic is in memory, use a follow-up response
+            responseTemplate = this.getRandomItem(rule.followUps);
+        } else {
+            // First time seeing this topic or it's a stateless rule
+            responseTemplate = this.getRandomItem(rule.responses);
+            // If it's a new memory topic, store it
+            if (rule.key) {
+                this.memory.set(rule.key, true);
+            }
+        }
         
-        // 4. If the template has a placeholder {0}, fill it with reflected remaining text
-        if (responseTemplate.indexOf('{0}') > -1) {
-          // Capture group 1 usually contains the "rest" of the sentence
+        // 4. If the template has a placeholder {0}, fill it
+        if (responseTemplate && responseTemplate.indexOf('{0}') > -1) {
           const remainder = match[1]; 
           if (remainder) {
             const reflectedRemainder = this.reflect(remainder, config.reflections, language);
             let finalResponse = responseTemplate.replace('{0}', reflectedRemainder);
             
-            // Prevent repeating exact same response immediately if possible (simple check)
             if (finalResponse !== this.lastResponse) {
                 this.lastResponse = finalResponse;
                 return finalResponse;
             }
           }
-        } else {
+        } else if (responseTemplate) {
           this.lastResponse = responseTemplate;
           return responseTemplate;
         }
       }
     }
 
-    // 5. Fallback if no patterns matched (or patterns failed to produce valid output)
+    // 5. Fallback if no patterns matched
     const fallback = this.getRandomItem(config.fallbacks);
     return fallback;
   }
@@ -61,55 +78,25 @@ export class ElizaBot {
    * Detects if the input contains Chinese characters.
    */
   private detectLanguage(input: string): Language {
-    // Regular expression range for Chinese characters
     const chineseRegex = /[\u4e00-\u9fa5]/;
     return chineseRegex.test(input) ? 'zh' : 'en';
   }
 
   /**
-   * Reflects the input string based on the reflection map (e.g., "I" -> "You").
+   * Reflects the input string based on the reflection map.
    */
   private reflect(text: string, reflectionMap: ReflectionMap, language: Language): string {
     if (language === 'en') {
-      // For English, we split by spaces to handle words
       const words = text.split(/\s+/);
       const reflectedWords = words.map(word => {
-        // Check exact match first (lowercase)
         const key = word.toLowerCase();
-        if (reflectionMap[key]) {
-          return reflectionMap[key];
-        }
-        return word;
+        return reflectionMap[key] || word;
       });
       return reflectedWords.join(' ');
     } else {
-      // For Chinese, we iterate through keys and replace
-      // Note: Simple replacement can be dangerous if keys overlap, 
-      // but for this simple Eliza implementation, we scan the string.
-      // To avoid re-replacing words we just replaced (e.g. Me -> You -> Me),
-      // we can tokenize. However, Chinese segmentation is hard without a library.
-      // We will use a simple approach: iterate through the string char by char/window
-      // or use a placeholder method.
-      
-      // Better approach for Chinese without tokenizer: 
-      // Sort keys by length (descending) to match longest phrases first.
-      let result = text;
-      
-      // We need a way to mark replaced tokens to avoid double replacement.
-      // Using a temporary placeholder unlikely to be in text.
+      // For Chinese, use a regex constructed from all keys for a single-pass replacement.
+      // Sort keys by length (desc) to match longest phrases first.
       const keys = Object.keys(reflectionMap).sort((a, b) => b.length - a.length);
-      
-      // Use a token array to build the result
-      // This is a naive implementation but works for basic Eliza logic
-      let temp = result;
-      for (const key of keys) {
-         // Replace key with a unique placeholder if found
-         // We use a simple marker like {{_INDEX_}}
-      }
-      
-      // Actually, a safer way for Chinese in this context:
-      // Split string by known keys? No.
-      // Let's do a single pass replacement using a regex constructed from all keys.
       const patternString = keys.map(k => k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
       const regex = new RegExp(patternString, 'g');
       

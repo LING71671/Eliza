@@ -6,7 +6,7 @@ import { ElizaBot } from './services/ElizaBot';
 import { Message } from './types';
 import { Send, Trash2 } from 'lucide-react';
 
-// Initialize logic engine outside component to persist state if needed (though stateless mostly)
+// Initialize logic engine outside component to persist state
 const eliza = new ElizaBot();
 
 function App() {
@@ -48,7 +48,6 @@ function App() {
     setIsTyping(true);
 
     // Simulate processing time for realism
-    // Variable delay based on input length to feel more natural
     const delay = Math.min(1000, Math.max(500, userText.length * 20));
 
     setTimeout(() => {
@@ -73,6 +72,7 @@ function App() {
 
   const handleReset = () => {
     if (window.confirm('Restart conversation? This will clear current history.')) {
+      eliza.reset(); // Clear the bot's internal memory
       const initialGreeting: Message = {
         id: Date.now().toString(),
         text: "Hello. How are you feeling now?",
@@ -149,7 +149,6 @@ function App() {
         <div className="max-w-4xl mx-auto mt-2 text-center">
             <p className="text-[10px] text-gray-400">
                 Eliza (1966) Simulation - No data is sent to a server.
-              <a href="URL">https://github.com/LING71671/Eliza</a>
             </p>
         </div>
       </footer>
