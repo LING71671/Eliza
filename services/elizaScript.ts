@@ -28,15 +28,18 @@ export const englishScript: ElizaConfig = {
   ],
   fallbacks: [
     "Please go on.",
-    "Does that suggest anything else which belongs to you?",
-    "I see.",
+    "I see. Tell me more.",
     "I am not sure I understand you fully.",
-    "Come, come, elucidate your thoughts.",
     "Can you elaborate on that?",
-    "That is quite interesting."
+    "That is quite interesting.",
+    "How does that make you feel?",
+    "I'm listening.",
+    "What comes to mind when you say that?",
+    "Please, continue."
   ],
   reflections: englishReflections,
   keywords: [
+    { pattern: /who are you/i, responses: ["I am Eliza. We were discussing you, not me.", "You can call me Eliza. Now, what was on your mind?", "Why do you ask?"] },
     { pattern: /can you ([^?]*)/i, responses: ["Don't you believe that I can {0}?", "You want me to be able to {0}.", "Perhaps you would like to be able to {0} yourself."] },
     { pattern: /can i ([^?]*)/i, responses: ["Perhaps you don't want to {0}.", "Do you want to be able to {0}?", "If you could {0}, would you?"] },
     { pattern: /you are ([^?]*)/i, responses: ["What makes you think I am {0}?", "Does it please you to believe I am {0}?", "Do you sometimes wish you were {0}?", "Perhaps you would like to be {0}."] },
@@ -91,20 +94,23 @@ export const chineseScript: ElizaConfig = {
     "我正在听。",
     "然后呢？",
     "这很有意思，请继续。",
-    "我明白了，请继续。",
+    "我明白了。",
     "这似乎对你很重要。",
     "你能具体说说吗？",
     "可以多谈谈这个吗？",
-    "能否多告诉我一些？",
     "当你说这些的时候，你有什么感觉？",
     "这让你想到了什么？",
-    "这种感觉让你联想到了什么？",
     "这听起来很让人深思。",
     "别担心，慢慢说，我在这里。",
-    "这是一个很有趣的观点。"
+    "这是一个很有趣的观点。",
+    "这让你感觉如何？",
+    "关于这一点，你还有什么想法？"
   ],
   reflections: chineseReflections,
   keywords: [
+    // Identity
+    { pattern: /你是谁/i, responses: ["我是伊莉莎。我们还是多谈谈你吧。", "你可以叫我伊莉莎。请告诉我你的困扰。", "你为什么问我是谁？"] },
+
     // Greetings
     { pattern: /你好|您好|嗨|喂/i, responses: ["你好。请告诉我你的困扰。", "嗨。你好像有什么心事？", "你好，我们可以聊聊。"] },
     { pattern: /再见|拜拜|晚安/i, responses: ["再见。希望能再和你聊天。", "这就走了吗？再见。", "晚安，愿你有个好梦。"] },
