@@ -33,7 +33,7 @@ function App() {
   }, [messages, isTyping]);
 
   const handleSend = async () => {
-    if (!inputText.trim()) return;
+    if (!inputText.trim() || isTyping) return;
 
     const userText = inputText.trim();
     const newMessage: Message = {

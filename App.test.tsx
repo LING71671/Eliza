@@ -29,3 +29,23 @@ test('allows user to send a message', async () => {
     expect(screen.queryByText(/Eliza is typing/i)).not.toBeInTheDocument();
   }, { timeout: 3000 });
 });
+
+test('prevents sending a message while bot is typing', async () => {
+  render(<App />);
+  const input = screen.getByPlaceholderText(/Type your message here/i);
+
+  fireEvent.change(input, { target: { value: 'First message' } });
+  fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+  // Bot is now typing, input should be disabled implicitly by the component logic
+  fireEvent.change(input, { target: { value: 'Second message' } });
+  fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+  // Only the first message should appear immediately
+  expect(screen.getByText('First message')).toBeInTheDocument();
+  expect(screen.queryByText('Second message')).not.toBeInTheDocument();
+
+  await waitFor(() => {
+    expect(screen.queryByText(/Eliza is typing/i)).not.toBeInTheDocument();
+  }, { timeout: 3000 });
+});

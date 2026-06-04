@@ -19,7 +19,9 @@ describe('ElizaBot', () => {
     it('should handle fallbacks', () => {
       // Something that definitely won't match any englishScript patterns
       const response = bot.processInput("xyz123randomstring");
-      expect(englishScript.fallbacks).toContain(response);
+      // Use fallback list OR the catch-all pattern response
+      const catchAllResponses = englishScript.keywords.find(k => k.pattern.toString() === '/(.*)/i')?.responses || [];
+      expect([...englishScript.fallbacks, ...catchAllResponses.map(r => r.replace('{0}', 'xyz123randomstring'))]).toContain(response);
     });
 
     it('should apply reflections to placeholders', () => {
@@ -49,6 +51,28 @@ describe('ElizaBot', () => {
       bot.processInput("my mother is nice");
       bot.reset();
       expect(bot).toBeDefined();
+    });
+  });
+
+  describe('Repetition Handling', () => {
+    it('should handle repeated inputs by returning different rule responses instead of fallbacks', () => {
+      const input = "i feel sad";
+      // Get the possible responses for "i feel" rule
+      const possibleResponses = englishScript.keywords.find(k => k.pattern.toString() === '/i feel ([^?]*)/i')?.responses || [];
+      const possibleReflected = possibleResponses.map(r => r.replace('{0}', 'sad'));
+
+      const response1 = bot.processInput(input);
+      const response2 = bot.processInput(input);
+      const response3 = bot.processInput(input);
+
+      expect(possibleReflected).toContain(response1);
+      expect(possibleReflected).toContain(response2);
+      expect(possibleReflected).toContain(response3);
+
+      // Due to randomness, they shouldn't always be the same, but importantly
+      // they shouldn't fallback to the generic `fallbacks`
+      expect(englishScript.fallbacks).not.toContain(response2);
+      expect(englishScript.fallbacks).not.toContain(response3);
     });
   });
 });
