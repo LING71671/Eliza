@@ -35,7 +35,9 @@ export const englishScript: ElizaConfig = {
     "How does that make you feel?",
     "I'm listening.",
     "What comes to mind when you say that?",
-    "Please, continue."
+    "Please, continue.",
+    "Please tell me more.",
+    "Let's change focus a bit... Tell me about your family."
   ],
   reflections: englishReflections,
   keywords: [
@@ -66,7 +68,6 @@ export const englishScript: ElizaConfig = {
     { pattern: /because/i, responses: ["Is that the real reason?", "Don't any other reasons come to mind?", "Does that reason seem to explain anything else?"] },
     { pattern: /maybe/i, responses: ["You don't seem quite certain.", "Why the uncertain tone?", "Can't you be more positive?", "You aren't sure?"] },
     { pattern: /no/i, responses: ["Are you saying no just to be negative?", "You are being a bit negative.", "Why not?", "Why 'no'?"] },
-    { pattern: /(.*)/i, responses: ["Please tell me more.", "Let's change focus a bit... Tell me about your family.", "Can you elaborate on that?", "Why do you say that {0}?"] }
   ]
 };
 
@@ -104,7 +105,13 @@ export const chineseScript: ElizaConfig = {
     "别担心，慢慢说，我在这里。",
     "这是一个很有趣的观点。",
     "这让你感觉如何？",
-    "关于这一点，你还有什么想法？"
+    "关于这一点，你还有什么想法？",
+    "请多告诉我一些。",
+    "能举个例子吗？",
+    "为什么你这么说？",
+    "我明白了，这对你来说意味着什么？",
+    "这很有趣，请继续。",
+    "能详细说说吗？"
   ],
   reflections: chineseReflections,
   keywords: [
@@ -184,6 +191,5 @@ export const chineseScript: ElizaConfig = {
     { pattern: /名字/i, responses: ["名字并不重要，不是吗？", "你为什么对名字感兴趣？", "我自己就是伊莉莎。"] },
 
     // Ultimate Catch-all
-    { pattern: /(.*)/i, responses: ["请多告诉我一些。", "能举个例子吗？", "为什么你这么说？", "我明白了，这对你来说意味着什么？", "这很有趣，请继续。", "能详细说说吗？"] }
   ]
 };
