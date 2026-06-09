@@ -15,11 +15,30 @@ function App() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Generate robust unique IDs
+  const generateId = () => {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+      return crypto.randomUUID();
+    }
+    // Fallback for older browsers
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  };
 
   // Initialize with a greeting
   useEffect(() => {
     const initialGreeting: Message = {
-      id: 'init-1',
+      id: generateId(),
       text: "Hello, I am Eliza. I am here to listen. You can speak to me in English or Chinese.\n\n你好，我是伊莉莎。我在这里倾听。你可以用中文或英文与我交谈。",
       sender: 'bot',
       timestamp: new Date()
@@ -37,7 +56,7 @@ function App() {
 
     const userText = inputText.trim();
     const newMessage: Message = {
-      id: Date.now().toString(),
+      id: generateId(),
       text: userText,
       sender: 'user',
       timestamp: new Date()
@@ -50,10 +69,14 @@ function App() {
     // Simulate processing time for realism
     const delay = Math.min(1000, Math.max(500, userText.length * 20));
 
-    setTimeout(() => {
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    typingTimeoutRef.current = setTimeout(() => {
       const responseText = eliza.processInput(userText);
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateId(),
         text: responseText,
         sender: 'bot',
         timestamp: new Date()
@@ -72,9 +95,13 @@ function App() {
 
   const handleReset = () => {
     if (window.confirm('Restart conversation? This will clear current history.')) {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current);
+      }
+      setIsTyping(false);
       eliza.reset(); // Clear the bot's internal memory
       const initialGreeting: Message = {
-        id: Date.now().toString(),
+        id: generateId(),
         text: "Hello. How are you feeling now?",
         sender: 'bot',
         timestamp: new Date()
