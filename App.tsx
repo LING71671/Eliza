@@ -5,6 +5,7 @@ import TypingIndicator from './components/TypingIndicator';
 import { ElizaBot } from './services/ElizaBot';
 import { Message } from './types';
 import { Send, Trash2 } from 'lucide-react';
+import { generateId } from './services/utils';
 
 // Initialize logic engine outside component to persist state
 const eliza = new ElizaBot();
@@ -19,7 +20,7 @@ function App() {
   // Initialize with a greeting
   useEffect(() => {
     const initialGreeting: Message = {
-      id: 'init-1',
+      id: generateId(),
       text: "Hello, I am Eliza. I am here to listen. You can speak to me in English or Chinese.\n\n你好，我是伊莉莎。我在这里倾听。你可以用中文或英文与我交谈。",
       sender: 'bot',
       timestamp: new Date()
@@ -37,7 +38,7 @@ function App() {
 
     const userText = inputText.trim();
     const newMessage: Message = {
-      id: Date.now().toString(),
+      id: generateId(),
       text: userText,
       sender: 'user',
       timestamp: new Date()
@@ -53,7 +54,7 @@ function App() {
     setTimeout(() => {
       const responseText = eliza.processInput(userText);
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateId(),
         text: responseText,
         sender: 'bot',
         timestamp: new Date()
@@ -74,7 +75,7 @@ function App() {
     if (window.confirm('Restart conversation? This will clear current history.')) {
       eliza.reset(); // Clear the bot's internal memory
       const initialGreeting: Message = {
-        id: Date.now().toString(),
+        id: generateId(),
         text: "Hello. How are you feeling now?",
         sender: 'bot',
         timestamp: new Date()
