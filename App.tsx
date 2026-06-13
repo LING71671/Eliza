@@ -9,6 +9,13 @@ import { Send, Trash2 } from 'lucide-react';
 // Initialize logic engine outside component to persist state
 const eliza = new ElizaBot();
 
+const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return Date.now().toString(36) + Math.random().toString(36).substring(2);
+};
+
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputText, setInputText] = useState('');
@@ -37,7 +44,7 @@ function App() {
 
     const userText = inputText.trim();
     const newMessage: Message = {
-      id: Date.now().toString(),
+      id: generateId(),
       text: userText,
       sender: 'user',
       timestamp: new Date()
@@ -53,7 +60,7 @@ function App() {
     setTimeout(() => {
       const responseText = eliza.processInput(userText);
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateId(),
         text: responseText,
         sender: 'bot',
         timestamp: new Date()
@@ -74,7 +81,7 @@ function App() {
     if (window.confirm('Restart conversation? This will clear current history.')) {
       eliza.reset(); // Clear the bot's internal memory
       const initialGreeting: Message = {
-        id: Date.now().toString(),
+        id: generateId(),
         text: "Hello. How are you feeling now?",
         sender: 'bot',
         timestamp: new Date()
