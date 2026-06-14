@@ -37,7 +37,7 @@ function App() {
 
     const userText = inputText.trim();
     const newMessage: Message = {
-      id: Date.now().toString(),
+      id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
       text: userText,
       sender: 'user',
       timestamp: new Date()
@@ -53,7 +53,7 @@ function App() {
     setTimeout(() => {
       const responseText = eliza.processInput(userText);
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : (Date.now() + 1).toString(),
         text: responseText,
         sender: 'bot',
         timestamp: new Date()
@@ -74,7 +74,7 @@ function App() {
     if (window.confirm('Restart conversation? This will clear current history.')) {
       eliza.reset(); // Clear the bot's internal memory
       const initialGreeting: Message = {
-        id: Date.now().toString(),
+        id: typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(),
         text: "Hello. How are you feeling now?",
         sender: 'bot',
         timestamp: new Date()
