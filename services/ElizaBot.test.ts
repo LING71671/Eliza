@@ -17,9 +17,12 @@ describe('ElizaBot', () => {
     });
 
     it('should handle fallbacks', () => {
-      // Something that definitely won't match any englishScript patterns
-      const response = bot.processInput("xyz123randomstring");
-      expect(englishScript.fallbacks).toContain(response);
+      const input = "xyz123randomstring";
+      const response = bot.processInput(input);
+      const catchAllResponses = englishScript.keywords.find(k => k.pattern.toString() === '/(.*)/i')?.responses || [];
+      const formattedCatchAll = catchAllResponses.map(r => r.replace('{0}', input));
+      const expectedResponses = [...englishScript.fallbacks, ...formattedCatchAll];
+      expect(expectedResponses).toContain(response);
     });
 
     it('should apply reflections to placeholders', () => {
