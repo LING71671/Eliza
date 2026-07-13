@@ -17,9 +17,13 @@ describe('ElizaBot', () => {
     });
 
     it('should handle fallbacks', () => {
-      // Something that definitely won't match any englishScript patterns
-      const response = bot.processInput("xyz123randomstring");
-      expect(englishScript.fallbacks).toContain(response);
+      // Something that definitely won't match any specific englishScript patterns
+      const input = "xyz123randomstring";
+      const response = bot.processInput(input);
+      const catchAll = englishScript.keywords.find(k => k.pattern.toString() === '/(.*)/i');
+      const catchAllResponses = catchAll ? catchAll.responses.map(r => r.replace('{0}', input)) : [];
+      const possibleResponses = [...englishScript.fallbacks, ...catchAllResponses];
+      expect(possibleResponses).toContain(response);
     });
 
     it('should apply reflections to placeholders', () => {
@@ -36,11 +40,12 @@ describe('ElizaBot', () => {
     });
 
     it('should match Chinese fallbacks or some generic rule like "我"', () => {
-      const response = bot.processInput("我随便乱说的没有任何匹配");
-      // "我" matches "我" in the regex and triggers the rule for "我".
-      // Let's just check it returns a string for a generic input since specific fallback might be intercepted by "我" pattern
-      expect(response).toBeTypeOf('string');
-      expect(response.length).toBeGreaterThan(0);
+      const input = "一段测试随机文字没有特定匹配";
+      const response = bot.processInput(input);
+      const catchAll = chineseScript.keywords.find(k => k.pattern.toString() === '/(.*)/i');
+      const catchAllResponses = catchAll ? catchAll.responses.map(r => r.replace('{0}', input)) : [];
+      const possibleResponses = [...chineseScript.fallbacks, ...catchAllResponses];
+      expect(possibleResponses).toContain(response);
     });
   });
 
