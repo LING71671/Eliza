@@ -9,7 +9,11 @@
 </div>
 
 > [!NOTE]
-> This is a completed side project and is not under active development. It remains available as a small interactive tribute to ELIZA.
+> **本项目已归档 (Archived)**
+>
+> 🌟 **梦开始的地方**（Gemini 3 Pro + Google AI Studio + Vercel）
+>
+> 本项目已停止维护，仅作为早期探索与历史留念归档。This project is archived and no longer actively maintained.
 
 ## About
 
