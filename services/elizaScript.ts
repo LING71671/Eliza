@@ -35,7 +35,10 @@ export const englishScript: ElizaConfig = {
     "How does that make you feel?",
     "I'm listening.",
     "What comes to mind when you say that?",
-    "Please, continue."
+    "Please, continue.",
+    "Please tell me more.",
+    "Let's change focus a bit... Tell me about your family.",
+    "Why do you say that {0}?"
   ],
   reflections: englishReflections,
   keywords: [
@@ -65,8 +68,7 @@ export const englishScript: ElizaConfig = {
     { pattern: /always/i, responses: ["Can you think of a specific example?", "When?", "What incident are you thinking of?", "Really, always?"] },
     { pattern: /because/i, responses: ["Is that the real reason?", "Don't any other reasons come to mind?", "Does that reason seem to explain anything else?"] },
     { pattern: /maybe/i, responses: ["You don't seem quite certain.", "Why the uncertain tone?", "Can't you be more positive?", "You aren't sure?"] },
-    { pattern: /no/i, responses: ["Are you saying no just to be negative?", "You are being a bit negative.", "Why not?", "Why 'no'?"] },
-    { pattern: /(.*)/i, responses: ["Please tell me more.", "Let's change focus a bit... Tell me about your family.", "Can you elaborate on that?", "Why do you say that {0}?"] }
+    { pattern: /no/i, responses: ["Are you saying no just to be negative?", "You are being a bit negative.", "Why not?", "Why 'no'?"] }
   ]
 };
 
@@ -104,7 +106,12 @@ export const chineseScript: ElizaConfig = {
     "别担心，慢慢说，我在这里。",
     "这是一个很有趣的观点。",
     "这让你感觉如何？",
-    "关于这一点，你还有什么想法？"
+    "关于这一点，你还有什么想法？",
+    "请多告诉我一些。",
+    "能举个例子吗？",
+    "为什么你这么说？",
+    "我明白了，这对你来说意味着什么？",
+    "能详细说说吗？"
   ],
   reflections: chineseReflections,
   keywords: [
@@ -181,9 +188,6 @@ export const chineseScript: ElizaConfig = {
     // Catch-all for specific words not caught above but useful
     { pattern: /钱|金钱/i, responses: ["钱对你来说很重要吗？", "你在担心经济问题吗？", "钱能代表一切吗？"] },
     { pattern: /工作|上班/i, key: 'work', responses: ["你的工作让你感到压力吗？", "你喜欢你的工作吗？", "工作对你的生活有什么影响？"], followUps: ["我们之前聊过工作，最近有什么变化吗？", "工作上的事还顺利吗？"] },
-    { pattern: /名字/i, responses: ["名字并不重要，不是吗？", "你为什么对名字感兴趣？", "我自己就是伊莉莎。"] },
-
-    // Ultimate Catch-all
-    { pattern: /(.*)/i, responses: ["请多告诉我一些。", "能举个例子吗？", "为什么你这么说？", "我明白了，这对你来说意味着什么？", "这很有趣，请继续。", "能详细说说吗？"] }
+    { pattern: /名字/i, responses: ["名字并不重要，不是吗？", "你为什么对名字感兴趣？", "我自己就是伊莉莎。"] }
   ]
 };

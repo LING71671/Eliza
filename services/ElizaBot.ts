@@ -70,7 +70,13 @@ export class ElizaBot {
     }
 
     // 5. Fallback if no patterns matched
-    const fallback = this.getRandomItem(config.fallbacks);
+    let fallback = this.getRandomItem(config.fallbacks);
+    if (fallback.indexOf('{0}') > -1) {
+      const reflectedInput = this.reflect(cleanInput, config.reflections, language);
+      fallback = fallback.replace('{0}', reflectedInput);
+    }
+
+    this.lastResponse = fallback;
     return fallback;
   }
 
