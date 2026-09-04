@@ -37,34 +37,43 @@ export class ElizaBot {
       if (match) {
         let responseTemplate: string | undefined;
 
-        // Check for memory key
-        if (rule.key && this.memory.has(rule.key) && rule.followUps && rule.followUps.length > 0) {
-            // Topic is in memory, use a follow-up response
-            responseTemplate = this.getRandomItem(rule.followUps);
-        } else {
-            // First time seeing this topic or it's a stateless rule
-            responseTemplate = this.getRandomItem(rule.responses);
-            // If it's a new memory topic, store it
-            if (rule.key) {
-                this.memory.set(rule.key, true);
+        let attempts = 0;
+        let finalResponse = "";
+
+        do {
+            // Check for memory key
+            if (rule.key && this.memory.has(rule.key) && rule.followUps && rule.followUps.length > 0) {
+                // Topic is in memory, use a follow-up response
+                responseTemplate = this.getRandomItem(rule.followUps);
+            } else {
+                // First time seeing this topic or it's a stateless rule
+                responseTemplate = this.getRandomItem(rule.responses);
+                // If it's a new memory topic, store it
+                if (rule.key) {
+                    this.memory.set(rule.key, true);
+                }
             }
-        }
-        
-        // 4. If the template has a placeholder {0}, fill it
-        if (responseTemplate && responseTemplate.indexOf('{0}') > -1) {
-          const remainder = match[1]; 
-          if (remainder) {
-            const reflectedRemainder = this.reflect(remainder, config.reflections, language);
-            let finalResponse = responseTemplate.replace('{0}', reflectedRemainder);
             
-            if (finalResponse !== this.lastResponse) {
-                this.lastResponse = finalResponse;
-                return finalResponse;
+            // 4. If the template has a placeholder {0}, fill it
+            if (responseTemplate && responseTemplate.indexOf('{0}') > -1) {
+              const remainder = match[1];
+              if (remainder) {
+                const reflectedRemainder = this.reflect(remainder, config.reflections, language);
+                finalResponse = responseTemplate.replace('{0}', reflectedRemainder);
+              } else {
+                // If remainder is falsy, we cannot fill {0}, so skip this attempt and force a retry or fallback
+                finalResponse = this.lastResponse; // Set it to lastResponse to intentionally trigger the retry loop
+              }
+            } else if (responseTemplate) {
+              finalResponse = responseTemplate;
             }
-          }
-        } else if (responseTemplate) {
-          this.lastResponse = responseTemplate;
-          return responseTemplate;
+
+            attempts++;
+        } while (finalResponse === this.lastResponse && attempts < 5);
+
+        if (finalResponse) {
+            this.lastResponse = finalResponse;
+            return finalResponse;
         }
       }
     }
