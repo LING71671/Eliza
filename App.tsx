@@ -32,12 +32,16 @@ function App() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isTyping]);
 
+  const generateId = () => {
+    return window.crypto?.randomUUID?.() || Date.now().toString() + Math.random().toString(36).substring(2);
+  };
+
   const handleSend = async () => {
     if (!inputText.trim()) return;
 
     const userText = inputText.trim();
     const newMessage: Message = {
-      id: Date.now().toString(),
+      id: generateId(),
       text: userText,
       sender: 'user',
       timestamp: new Date()
@@ -53,7 +57,7 @@ function App() {
     setTimeout(() => {
       const responseText = eliza.processInput(userText);
       const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
+        id: generateId(),
         text: responseText,
         sender: 'bot',
         timestamp: new Date()
@@ -74,7 +78,7 @@ function App() {
     if (window.confirm('Restart conversation? This will clear current history.')) {
       eliza.reset(); // Clear the bot's internal memory
       const initialGreeting: Message = {
-        id: Date.now().toString(),
+        id: generateId(),
         text: "Hello. How are you feeling now?",
         sender: 'bot',
         timestamp: new Date()
@@ -115,6 +119,7 @@ function App() {
           <button 
             onClick={handleReset}
             title="Clear Chat"
+            aria-label="Clear Chat History"
             className="p-3 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-full transition-colors"
           >
             <Trash2 size={20} />
@@ -135,6 +140,7 @@ function App() {
               <button
                 onClick={handleSend}
                 disabled={!inputText.trim() || isTyping}
+                aria-label="Send Message"
                 className={`h-full aspect-square rounded-full flex items-center justify-center transition-all
                   ${!inputText.trim() || isTyping 
                     ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 

@@ -29,3 +29,31 @@ test('allows user to send a message', async () => {
     expect(screen.queryByText(/Eliza is typing/i)).not.toBeInTheDocument();
   }, { timeout: 3000 });
 });
+
+test('allows user to clear chat history', async () => {
+  // Mock window.confirm
+  const confirmSpy = vi.spyOn(window, 'confirm').mockImplementation(() => true);
+
+  render(<App />);
+  const input = screen.getByPlaceholderText(/Type your message here/i);
+
+  // Send a message
+  fireEvent.change(input, { target: { value: 'Hello Eliza' } });
+  fireEvent.keyDown(input, { key: 'Enter', code: 'Enter' });
+
+  expect(screen.getByText('Hello Eliza')).toBeInTheDocument();
+
+  // Find and click the reset button
+  const resetButton = screen.getByTitle('Clear Chat');
+  fireEvent.click(resetButton);
+
+  expect(confirmSpy).toHaveBeenCalled();
+
+  // Wait for the chat to clear and show the new initial greeting
+  await waitFor(() => {
+    expect(screen.queryByText('Hello Eliza')).not.toBeInTheDocument();
+    expect(screen.getByText('Hello. How are you feeling now?')).toBeInTheDocument();
+  });
+
+  confirmSpy.mockRestore();
+});
