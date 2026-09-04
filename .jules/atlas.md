@@ -1,3 +1,6 @@
 ## 2025-06-01 - Test Suite Introduction
 **Learning:** The project is built with React, Vite, and Typescript, but completely lacked tests for its complex bot logic and UI components. JSDOM requires mocking `HTMLElement.prototype.scrollIntoView`.
 **Action:** Introduced Vitest and React Testing Library. Added basic test suite for `ElizaBot.ts` and `App.tsx`. Future changes should maintain or extend this test coverage.
+## 2025-06-09 - Testing Bot Timeout and Unique IDs
+**Learning:** `App.tsx` handles asynchronous bot replies using `setTimeout`. Relying on `Date.now()` for unique React keys is insufficient because messages generated close together can collide. Additionally, an un-cleared `setTimeout` can result in state mutations after a conversation is reset. Furthermore, `window.confirm` should be mocked in Vitest to test component actions that require confirmation prompts.
+**Action:** Use `crypto.randomUUID()` with a fallback to generate unique keys. Always maintain references to timeouts in React components (e.g., via `useRef`) and clear them when the component unmounts or state resets to prevent race conditions. When testing components that use native dialogs, mock them with `window.confirm = vi.fn(() => true)`.
