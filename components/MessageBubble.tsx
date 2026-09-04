@@ -29,7 +29,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             }`}
           >
             {/* If it's the bot, we use a slightly different font for that "machine" feel, optionally */}
-            <p className={!isUser ? 'font-mono' : ''}>{message.text}</p>
+            <p className={`whitespace-pre-wrap ${!isUser ? 'font-mono' : ''}`}>{message.text}</p>
           </div>
           <span className="text-[10px] text-gray-400 mt-1 px-1">
             {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
